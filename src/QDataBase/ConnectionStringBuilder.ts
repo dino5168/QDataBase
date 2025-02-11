@@ -1,16 +1,15 @@
-
 import type {DatabaseConfig, MongoConfig, RedisConfig} from "@Env/types";
 
 export class ConnectionStringBuilder {
   static buildPostgresUrl(config: DatabaseConfig): string {
     const ssl = config.ssl ? "?sslmode=require" : "";
-    return `postgresql://${config.username}:${config.password}@${config.host}:${config.port}/${config.database}${ssl}`;
+    return `postgresql://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}${ssl}`;
   }
 
   static buildMongoUrl(config: MongoConfig): string {
     const auth =
-      config.username && config.password
-        ? `${config.username}:${config.password}@`
+      config.user && config.password
+        ? `${config.user}:${config.password}@`
         : "";
     const replicaSet = config.replicaSet
       ? `?replicaSet=${config.replicaSet}`

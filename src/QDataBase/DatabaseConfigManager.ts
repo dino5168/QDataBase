@@ -4,7 +4,8 @@ import {
   SupportedDatabase,
   DatabaseConfig,
   RedisConfig,
-} from "@Env/types";
+} from "@QDataBase/types";
+
 import dotenv from "dotenv";
 export class DatabaseConfigManager {
   private static instance: DatabaseConfigManager;
@@ -27,23 +28,32 @@ export class DatabaseConfigManager {
     // Load PostgreSQL config
     if (process.env.POSTGRES_ENABLED === "true") {
       this.configs.postgres = {
-        host: process.env.POSTGRES_HOST || "localhost",
+        server: process.env.POSTGRES_HOST || "localhost",
         port: parseInt(process.env.POSTGRES_PORT || "5432"),
-        username: process.env.POSTGRES_USER || "postgres",
+        user: process.env.POSTGRES_USER || "postgres",
         password: process.env.POSTGRES_PASSWORD || "",
         database: process.env.POSTGRES_DB || "postgres",
         ssl: process.env.POSTGRES_SSL === "true",
-        poolSize: parseInt(process.env.POSTGRES_POOL_SIZE || "10"),
-        timeout: parseInt(process.env.POSTGRES_TIMEOUT || "5000"),
+        pool: {
+          min: 10,
+          max: 50,
+          idleTimeoutMillis: 1000,
+        },
+        options: {
+          encrypt: false,
+          trustServerCertificate: false,
+          connectionTimeout: 3000,
+          requestTimeout: 3000,
+        },
       };
     }
 
     // Load MongoDB config
     if (process.env.MONGODB_ENABLED === "true") {
       this.configs.mongodb = {
-        host: process.env.MONGODB_HOST || "localhost",
+        server: process.env.MONGODB_HOST || "localhost",
         port: parseInt(process.env.MONGODB_PORT || "27017"),
-        username: process.env.MONGODB_USER || "",
+        user: process.env.MONGODB_USER || "",
         password: process.env.MONGODB_PASSWORD || "",
         database: process.env.MONGODB_DATABASE || "test",
         authSource: process.env.MONGODB_AUTH_SOURCE,
@@ -55,11 +65,22 @@ export class DatabaseConfigManager {
     console.log(process.env.PORT);
     if (process.env.MSSQL_ENABLED === "true") {
       this.configs.mssql = {
-        host: process.env.MSSQL_HOST || "localhost",
+        server: process.env.MSSQL_HOST || "localhost",
         port: parseInt(process.env.MSSQL_PORT || "1433"),
-        username: process.env.MSSQL_USER || "",
+        user: process.env.MSSQL_USER || "",
         password: process.env.MSSQL_PASSWORD || "",
         database: process.env.MSSQL_DATABASE || "Lottery",
+        pool: {
+          max: 50,
+          min: 10,
+          idleTimeoutMillis: 1000,
+        },
+        options: {
+          encrypt: false,
+          trustServerCertificate: false,
+          connectionTimeout: 3000,
+          requestTimeout: 3000,
+        },
       };
     }
 
@@ -92,14 +113,14 @@ export class DatabaseConfigManager {
   }
 
   private validateRelationalConfig(config: DatabaseConfig): boolean {
-    return !!(config.host && config.port && config.username && config.database);
+    return !!(config.server && config.port && config.user && config.database);
   }
 
   private validateMongoConfig(config: MongoConfig): boolean {
-    return !!(config.host && config.port && config.database);
+    return !!(config.server && config.port && config.database);
   }
 
   private validateRedisConfig(config: RedisConfig): boolean {
-    return !!(config.host && config.port);
+    return !!(config.server && config.port);
   }
 }
