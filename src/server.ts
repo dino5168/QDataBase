@@ -2,9 +2,9 @@ import "tsconfig-paths/register";
 import express, {Express, Request, Response} from "express";
 import cors from "cors";
 
-import {DatabaseConfigManager} from "@QDataBase/DatabaseConfigManager";
-import {DatabaseConfig} from "@QDataBase/types";
-import {QDB} from "@QDataBase/QDB";
+import {DatabaseConfigManager} from "lib/QDataBase/DatabaseConfigManager";
+import {DatabaseConfig} from "lib/QDataBase/types";
+import {QDB} from "lib/QDataBase/QDB";
 
 // 載入環境變數
 //dotenv.config();

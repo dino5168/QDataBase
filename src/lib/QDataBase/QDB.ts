@@ -1,7 +1,7 @@
 import knex, {Knex} from "knex";
 
-import {DatabaseConfig, QueryResult} from "@QDataBase/types";
-import {DBException} from "@QDataBase/DBException";
+import {DatabaseConfig, QueryResult} from "@lib/QDataBase/types";
+import {DBException} from "@lib/QDataBase/DBException";
 
 export class QDB {
   private db: Knex;

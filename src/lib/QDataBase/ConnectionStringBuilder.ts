@@ -1,4 +1,8 @@
-import type {DatabaseConfig, MongoConfig, RedisConfig} from "@QDataBase/types";
+import type {
+  DatabaseConfig,
+  MongoConfig,
+  RedisConfig,
+} from "@lib/QDataBase/types";
 
 export class ConnectionStringBuilder {
   static buildPostgresUrl(config: DatabaseConfig): string {

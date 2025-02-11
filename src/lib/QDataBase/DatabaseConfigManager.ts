@@ -4,7 +4,7 @@ import {
   SupportedDatabase,
   DatabaseConfig,
   RedisConfig,
-} from "@QDataBase/types";
+} from "@lib/QDataBase/types";
 
 import dotenv from "dotenv";
 
