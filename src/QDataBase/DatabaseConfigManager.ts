@@ -7,6 +7,7 @@ import {
 } from "@QDataBase/types";
 
 import dotenv from "dotenv";
+
 export class DatabaseConfigManager {
   private static instance: DatabaseConfigManager;
   private configs: DatabaseConnections = {};

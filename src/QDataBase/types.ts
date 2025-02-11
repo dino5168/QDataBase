@@ -33,7 +33,7 @@ export interface MongoConfig
   authSource?: string;
   replicaSet?: string;
 }
-
+//支援的 DataBase
 export type SupportedDatabase =
   | "postgres"
   | "mysql"

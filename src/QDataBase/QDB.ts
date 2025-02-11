@@ -1,14 +1,7 @@
 import knex, {Knex} from "knex";
 
 import {DatabaseConfig, QueryResult} from "@QDataBase/types";
-
-// 定義資料庫錯誤
-export class DatabaseError extends Error {
-  constructor(message: string, public originalError?: any) {
-    super(message);
-    this.name = "DatabaseError";
-  }
-}
+import {DBException} from "@QDataBase/DBException";
 
 export class QDB {
   private db: Knex;
@@ -46,10 +39,7 @@ export class QDB {
         await this.db.raw("SELECT 1");
         this.isConnected = true;
       } catch (error) {
-        throw new DatabaseError(
-          "Failed to establish database connection",
-          error
-        );
+        throw new DBException("Failed to establish database connection", error);
       }
     }
   }
@@ -177,7 +167,7 @@ export class QDB {
       await this.db.destroy();
       this.isConnected = false;
     } catch (error) {
-      throw new DatabaseError("Failed to close database connection", error);
+      throw new DBException("Failed to close database connection", error);
     }
   }
 }

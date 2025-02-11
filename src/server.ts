@@ -38,11 +38,14 @@ app.get("/", async (req: Request, res: Response) => {
 
 // 定義 API 路由
 app.get("/539", async (req: Request, res: Response) => {
-  const queryResult = await qdb.query(
-    "SELECT top 25 * FROM L539 order by Period desc"
-  );
-
-  res.send(queryResult);
+  try {
+    const queryResult = await qdb.query(
+      "SELECT top 25 * FROM L539 order by Period desc"
+    );
+    res.json(queryResult);
+  } catch (error) {
+    res.status(500).json({error: "資料庫查詢錯誤"});
+  }
 });
 
 // 啟動伺服器
