@@ -69,17 +69,17 @@ export class DatabaseConfigManager {
         port: parseInt(process.env.MSSQL_PORT || "1433"),
         user: process.env.MSSQL_USER || "",
         password: process.env.MSSQL_PASSWORD || "",
-        database: process.env.MSSQL_DATABASE || "Lottery",
+        database: process.env.MSSQL_DATABASE || "test",
         pool: {
           max: 50,
           min: 10,
-          idleTimeoutMillis: 1000,
+          idleTimeoutMillis: 600000,
         },
         options: {
           encrypt: false,
           trustServerCertificate: false,
-          connectionTimeout: 3000,
-          requestTimeout: 3000,
+          connectionTimeout: 60000,
+          requestTimeout: 60000,
         },
       };
     }
