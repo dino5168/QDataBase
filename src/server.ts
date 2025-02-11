@@ -1,9 +1,17 @@
+import "tsconfig-paths/register";
+
 import express, {Express, Request, Response} from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
+import {DatabaseConfigManager} from "@QDataBase/DatabaseConfigManager";
+
 // 載入環境變數
-dotenv.config();
+//dotenv.config();
+
+let dbcm: DatabaseConfigManager = DatabaseConfigManager.getInstance();
+let mssqlConfig = dbcm.getConfig("mssql");
+console.log(mssqlConfig);
 
 // 建立 Express 應用
 const app: Express = express();
