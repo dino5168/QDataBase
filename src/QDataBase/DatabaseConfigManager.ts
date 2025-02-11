@@ -5,7 +5,7 @@ import {
   DatabaseConfig,
   RedisConfig,
 } from "@Env/types";
-
+import dotenv from "dotenv";
 export class DatabaseConfigManager {
   private static instance: DatabaseConfigManager;
   private configs: DatabaseConnections = {};
@@ -22,6 +22,8 @@ export class DatabaseConfigManager {
   }
 
   private loadConfigs(): void {
+    //載入 .env
+    dotenv.config();
     // Load PostgreSQL config
     if (process.env.POSTGRES_ENABLED === "true") {
       this.configs.postgres = {
@@ -50,6 +52,7 @@ export class DatabaseConfigManager {
     }
 
     // Load MSSQL config
+    console.log(process.env.PORT);
     if (process.env.MSSQL_ENABLED === "true") {
       this.configs.mssql = {
         host: process.env.MSSQL_HOST || "localhost",
