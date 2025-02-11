@@ -22,3 +22,11 @@ npm install --save-dev nodemon
 ```sh
 npx tsc --init
 ```
+
+### 上傳到 Github
+
+```sh
+git add .
+git commit -m ""
+git push
+```
