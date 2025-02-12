@@ -35,7 +35,10 @@
     "baseUrl": "./src",                                  /* Specify the base directory to resolve non-relative module names. */
      "paths": {
       "@Env/*": ["Env/*"],
-       "@lib/*": ["lib/*"]
+       "@lib/*": ["lib/*"],
+       "@config/*" :["config/*"],
+       "@controllers/*" : ["controllers/*"],
+       
 
      },    
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */

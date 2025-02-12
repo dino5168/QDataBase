@@ -2,8 +2,9 @@ import knex, {Knex} from "knex";
 
 import {DatabaseConfig, QueryResult} from "@lib/QDataBase/types";
 import {DBException} from "@lib/QDataBase/DBException";
+import type {IQDB} from "./IQDB";
 
-export class QDB {
+export class QDB implements IQDB {
   private db: Knex;
   private isConnected: boolean = false;
 
