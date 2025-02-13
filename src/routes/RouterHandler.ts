@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {QueryService} from "@lib/QDataBase/QueryService";
+import {QueryService} from "@services/QueryService";
 export interface HealthCheck {
   status: string;
   timestamp: string;

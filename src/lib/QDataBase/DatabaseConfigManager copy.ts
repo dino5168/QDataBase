@@ -14,19 +14,37 @@ export enum SupportedDatabase {
   REDIS = "redis",
 }
 
-// 修改接口以匹配實際的配置文件格式
-interface DatabaseEntry {
-  type: string;
-  config: any;
+interface NamedDatabaseConfig<T> {
+  name: string;
+  config: T;
 }
 
-interface ConfigFile {
-  databases: DatabaseEntry[];
+type NamedDatabaseConnections = {
+  [key in SupportedDatabase]?: NamedDatabaseConfig<any>[];
+};
+
+function isNamedDatabaseConfigArray(
+  value: unknown
+): value is NamedDatabaseConfig<any>[] {
+  if (!Array.isArray(value)) {
+    console.log("Config is not an array:", value);
+    return false;
+  }
+  const isValid = value.every(
+    (item) =>
+      typeof item === "object" &&
+      item !== null &&
+      "name" in item &&
+      "config" in item &&
+      typeof item.name === "string"
+  );
+  console.log("Config validation result:", isValid);
+  return isValid;
 }
 
 export class DatabaseConfigManager {
   private static instance: DatabaseConfigManager;
-  private configs: Map<string, any> = new Map();
+  private configs: NamedDatabaseConnections = {};
 
   private constructor() {}
 
@@ -41,29 +59,47 @@ export class DatabaseConfigManager {
     try {
       console.log("Reading config file:", configFileName);
       const configFile = fs.readFileSync(configFileName, "utf8");
-      const configData: ConfigFile = JSON.parse(configFile);
+      console.log("Config file content:", configFile);
+
+      const configData = JSON.parse(configFile);
+      console.log("Parsed config data:", configData);
+
+      if (!configData.databases) {
+        throw new Error(
+          "Invalid config file format: 'databases' property not found"
+        );
+      }
 
       // 清空現有配置
-      this.configs.clear();
+      this.configs = {};
 
-      // 處理配置數組
-      configData.databases.forEach((entry) => {
-        const dbType = entry.type.toLowerCase();
-        console.log(`Processing database type: ${dbType}`, entry);
+      Object.entries(configData.databases).forEach(([dbType, config]) => {
+        const dbTypeLower = dbType.toLowerCase();
+        console.log(`Processing database type: ${dbTypeLower}`, config);
 
         if (
-          Object.values(SupportedDatabase).includes(dbType as SupportedDatabase)
+          Object.values(SupportedDatabase).includes(
+            dbTypeLower as SupportedDatabase
+          )
         ) {
-          console.log(`Valid configuration found for ${dbType}:`, entry.config);
-          // 將配置保存到 Map 中，使用類型和數據庫名稱作為鍵
-          const key = `${dbType}:${entry.config.database}`;
-          this.configs.set(key, entry.config);
+          if (isNamedDatabaseConfigArray(config)) {
+            console.log(
+              `Valid configuration found for ${dbTypeLower}:`,
+              config
+            );
+            this.configs[dbTypeLower as SupportedDatabase] = config;
+          } else {
+            console.warn(
+              `Invalid configuration format for database type: ${dbTypeLower}`,
+              config
+            );
+          }
         } else {
-          console.warn(`Unsupported database type: ${dbType}`);
+          console.warn(`Unsupported database type: ${dbTypeLower}`);
         }
       });
 
-      console.log("Final loaded configs:", Object.fromEntries(this.configs));
+      console.log("Final loaded configs:", this.configs);
       return this;
     } catch (error) {
       console.error("Error loading database config:", error);
@@ -75,12 +111,16 @@ export class DatabaseConfigManager {
     dbType: T,
     dbName?: string
   ): DatabaseConnections[T] | null {
-    const dbTypeLower = dbType.toLowerCase();
+    const dbTypeLower = dbType.toLowerCase() as T;
+    console.log("Current configs state:", this.configs);
     console.log("Looking for config:", {dbType: dbTypeLower, dbName});
 
-    // 使用類型和數據庫名稱組合的鍵來查找配置
-    const key = `${dbTypeLower}:${dbName}`;
-    const config = this.configs.get(key);
+    const dbConfigs = this.configs[dbTypeLower] || [];
+    console.log("Found dbConfigs:", dbConfigs);
+
+    const config =
+      dbConfigs.find((db) => db.name === dbName)?.config ||
+      dbConfigs[0]?.config;
 
     console.log("Found config:", config);
 

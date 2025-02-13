@@ -1,7 +1,7 @@
 import express, {Request, Response, Application, NextFunction} from "express";
 import {SQLMapping} from "@config/SQLMapping";
 import {IQDB} from "@lib/QDataBase/IQDB";
-import {QueryService} from "@lib/QDataBase/QueryService";
+import {QueryService} from "@services/QueryService";
 import {RouterHandler} from "routes/RouterHandler";
 
 // 定義資料庫查詢介面

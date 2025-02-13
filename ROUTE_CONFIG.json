@@ -1,0 +1,29 @@
+[
+  {
+    "path": "/539",
+    "queryKey": "QUERY_539",
+    "method": "GET",
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 100
+    }
+  },
+  {
+    "path": "/53901",
+    "queryKey": "QUERY_539_01",
+    "method": "GET",
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 100
+    }
+  },
+  {
+    "path": "/53902",
+    "queryKey": "QUERY_539_02",
+    "method": "GET",
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 100
+    }
+  }
+]

@@ -38,6 +38,7 @@
        "@lib/*": ["lib/*"],
        "@config/*" :["config/*"],
        "@controllers/*" : ["controllers/*"],
+       "@services/*" :["services/*"],
        
 
      },    
