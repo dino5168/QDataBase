@@ -22,7 +22,7 @@ import {Router, Request, Response} from "express";
 import {rateLimit} from "express-rate-limit";
 import {QueryService} from "@services/QueryService";
 
-export class QRouterService {
+export class QueryDataController {
   private router: Router;
 
   constructor(

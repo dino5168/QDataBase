@@ -44,13 +44,11 @@ export class QServer {
     return this.QueryServiceObj;
   }
 
-  public setRouter() {
-    // let router = new RouterHandler();;
-  }
+  
 
   public async initialize(): Promise<void> {
     try {
-      const sqlSettingPath = process.env.SQL_SETTING;
+      const sqlSettingPath = process.env.CONFIG_SQL_SETTING;
       if (!sqlSettingPath) {
         throw new Error("SQL_SETTING environment variable is not defined");
       }

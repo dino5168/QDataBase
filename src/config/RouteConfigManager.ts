@@ -43,7 +43,7 @@ export class RouteConfigManager {
   public setConfigPath(filePath: string): void {
     this.configPath = filePath;
   }
-
+  //載入設定檔
   public async loadConfigs(): Promise<RouteConfig[]> {
     try {
       const jsonContent = await fs.readFile(this.configPath, "utf8");

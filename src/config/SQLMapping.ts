@@ -1,6 +1,7 @@
 import ini from "ini";
 import fs from "fs";
 
+//將 .ini 對應的 SQL 讀取入 Map 提供查詢使用。
 export class SQLMapping {
   private static instance: SQLMapping | null = null;
   private fileName: string;

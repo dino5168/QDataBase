@@ -25,5 +25,24 @@
       "windowMs": 900000,
       "max": 100
     }
+  },
+  {
+    "path": "/User",
+    "queryKey": "QUERY_USER",
+    "method": "GET",
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 100
+    }
+  },
+  {
+    "path": "/Roles",
+    "queryKey": "QUERY_ROLES",
+    "method": "GET"
+  },
+  {
+    "path": "/groups",
+    "queryKey": "QUERY_GROUPS",
+    "method": "GET"
   }
 ]
