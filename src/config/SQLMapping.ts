@@ -1,5 +1,6 @@
 import ini from "ini";
 import fs from "fs";
+import {UtilFiles} from "@utils/UtilFiles";
 
 //將 .ini 對應的 SQL 讀取入 Map 提供查詢使用。
 export class SQLMapping {
@@ -22,19 +23,16 @@ export class SQLMapping {
 
   private read(): void {
     try {
-      const configFile = fs.readFileSync(this.fileName, "utf-8");
-      const config = ini.parse(configFile);
-
-      // Convert config object to Map
-      Object.entries(config).forEach(([key, value]) => {
-        this.queryMap.set(key, value as string);
-      });
-
+      this.queryMap = UtilFiles.ReadIni(this.fileName);
       console.log("Loaded queries:", this.queryMap);
     } catch (error) {
       console.error("Error reading config file:", error);
       throw error;
     }
+  }
+
+  public getKeys() {
+    return Array.from(this.queryMap.keys());
   }
 
   public get(queryKey: string): string | undefined {

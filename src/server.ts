@@ -27,6 +27,10 @@ import type {QueryFunction} from "@controllers/RedisController";
 //使用 dotenv  載入環境變數
 dotenv.config();
 
+const CONFIG_SQL_SETTING = process.env.CONFIG_SQL_SETTING;
+if (!CONFIG_SQL_SETTING) throw new Error("SQL_SETTING set up Error");
+const sqlMapping = SQLMapping.getInstance(CONFIG_SQL_SETTING);
+
 try {
   //資料庫設定
   const app = express();
@@ -38,14 +42,16 @@ try {
     next(); // 進入下一步
   };
 
-  let qdb: IQDB = GetDB();
+  let qdb: IQDB = GetDB("Lottery");
 
-  let queryService = GetDBService(qdb);
-  console.log("DB Service Initialized:", queryService);
-  UseLottery(app, queryService, authMiddleware);
+  let queryService = GetDBService(qdb, sqlMapping);
+
+  UseLottery(app, "/Lottery", queryService, authMiddleware);
   UseRedis(app, queryService);
 
-  //
+  app.get("/", (req, res) => {
+    res.send("OK");
+  });
 
   //
   app.use("/test", (req: Request, res: Response) => {
