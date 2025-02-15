@@ -36,29 +36,40 @@ interface ModelConfig {
   lstmUnits: number;
 }
 
-class LotteryPredictor03 {
+export class LotteryPredictor03 {
   private readonly MAX_NUMBER = 39;
-  private readonly NUMBERS_PER_DRAW = 5;
+  private readonly NUMBERS_PER_DRAW = 7;
   private model: tf.LayersModel | null = null;
-
+  //lstmUnits LSTM 層的單元數 (神經元數量)
   constructor(
     private readonly config: ModelConfig = {
-      sequenceLength: 10,
+      sequenceLength: 20,
       epochs: 50,
       batchSize: 16,
       lstmUnits: 50,
     }
   ) {}
-
   /**
    * 從資料庫獲取歷史開獎資料
    */
   private async fetchData(): Promise<LottoDraw[]> {
+    //參數需給 300
+    //集成學習 ----預測信心度：挑選高的
+
     try {
       let db = GetDB("Lottery");
       const result = await db.query<LottoDBRecord>(
-        "SELECT * FROM L539 ORDER BY Period desc"
+        "SELECT Top 300 * FROM L539 ORDER BY Period desc "
       );
+
+      result.data?.shift();
+      result.data?.shift();
+      result.data?.shift();
+      result.data?.shift();
+      result.data?.shift();
+      result.data?.shift();
+
+      console.log(result.data?.at(0));
 
       if (!result.data || !Array.isArray(result.data)) {
         console.error("查詢結果異常", result);
@@ -66,6 +77,7 @@ class LotteryPredictor03 {
       }
 
       return result.data
+        .reverse() // 加入這行
         .map((data) => this.transformLottoData(data))
         .filter((item): item is LottoDraw => item !== null);
     } catch (error) {

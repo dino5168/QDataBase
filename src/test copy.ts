@@ -55,4 +55,52 @@ async function main() {
 }
 
 // 執行範例程式
-main();
+//main();
+type SourceData = {
+  ID: number;
+  OpenDate: string;
+  numbers: string;
+};
+
+type TransformedData = {
+  Period: string;
+  OpenDate: string;
+  NO_1: string;
+  NO_2: string;
+  NO_3: string;
+  NO_4: string;
+  NO_5: string;
+};
+
+const transformData = (year: string, data: SourceData[]): TransformedData[] => {
+  return data.map((item, index) => {
+    const numbers = item.numbers.split(", ");
+    return {
+      Period: `${year}${(index + 1).toString().padStart(6, "0")}`,
+      OpenDate: item.OpenDate.split("(")[0], // 去除括號內的文字
+      NO_1: numbers[0],
+      NO_2: numbers[1],
+      NO_3: numbers[2],
+      NO_4: numbers[3],
+      NO_5: numbers[4],
+    };
+  });
+};
+
+let db = GetDB("Lottery");
+
+const GetA539 = async () => {
+  const transYear = "2007";
+  const transPublicYear = "" + (parseInt(transYear) - 1911);
+
+  const result = await db.query(
+    `select  * from A539 where OpenDate like '${transYear}%' order by OpenDate asc`
+  );
+  let trandatas = transformData(transPublicYear, result.data as SourceData[]);
+  trandatas.forEach((element) => {
+    db.insert("L539", element);
+  });
+  console.log("TransFinish");
+};
+
+GetA539();
