@@ -30,9 +30,9 @@ interface PredictionResult {
 }
 
 interface ModelConfig {
-  sequenceLength: number;
+  sequenceLength: number; //用幾組歷史開獎號碼來預測未來號碼（默認 20）。
   epochs: number;
-  batchSize: number;
+  batchSize: number; //訓練時每次處理的數據量
   lstmUnits: number;
 }
 
@@ -43,32 +43,27 @@ export class LotteryPredictor03 {
   //lstmUnits LSTM 層的單元數 (神經元數量)
   constructor(
     private readonly config: ModelConfig = {
-      sequenceLength: 20,
-      epochs: 50,
+      sequenceLength: 48,
+      epochs: 30,
       batchSize: 16,
-      lstmUnits: 50,
+      lstmUnits: 30,
     }
   ) {}
   /**
    * 從資料庫獲取歷史開獎資料
    */
-  private async fetchData(): Promise<LottoDraw[]> {
+  private async fetchData(dataNumbers: string): Promise<LottoDraw[]> {
     //參數需給 300
     //集成學習 ----預測信心度：挑選高的
 
     try {
       let db = GetDB("Lottery");
       const result = await db.query<LottoDBRecord>(
-        "SELECT Top 300 * FROM L539 ORDER BY Period desc "
+        `SELECT Top ${dataNumbers} *  FROM L539 ORDER BY Period desc`
       );
 
-      result.data?.shift();
-      result.data?.shift();
-      result.data?.shift();
-      result.data?.shift();
-      result.data?.shift();
-      result.data?.shift();
-
+      //result.data?.shift();
+      //result.data?.shift();
       console.log(result.data?.at(0));
 
       if (!result.data || !Array.isArray(result.data)) {
@@ -215,9 +210,12 @@ export class LotteryPredictor03 {
   /**
    * 訓練模型並進行預測
    */
-  async predict(recentDraws: number = 200): Promise<PredictionResult> {
+  async predict(
+    recentDraws: number = 100,
+    dataNumbers: string
+  ): Promise<PredictionResult> {
     // 獲取歷史數據
-    const history = await this.fetchData();
+    const history = await this.fetchData(dataNumbers);
     const recentHistory = history.slice(-recentDraws);
 
     if (recentHistory.length < this.config.sequenceLength + 1) {

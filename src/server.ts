@@ -23,7 +23,8 @@ import {RedisController} from "@controllers/RedisController";
 import {json} from "stream/consumers";
 import {QueryDataController} from "@controllers/QueryDataController";
 
-import type {QueryFunction} from "@controllers/RedisController";
+import type { QueryFunction } from "@controllers/RedisController";
+
 //使用 dotenv  載入環境變數
 dotenv.config();
 
@@ -43,6 +44,8 @@ try {
   };
 
   let qdb: IQDB = GetDB("Lottery");
+
+  
 
   let queryService = GetDBService(qdb, sqlMapping);
 

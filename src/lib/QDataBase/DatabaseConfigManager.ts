@@ -49,12 +49,12 @@ export class DatabaseConfigManager {
       // 處理配置數組
       configData.databases.forEach((entry) => {
         const dbType = entry.type.toLowerCase();
-        console.log(`Processing database type: ${dbType}`, entry);
+        //   console.log(`Processing database type: ${dbType}`, entry);
 
         if (
           Object.values(SupportedDatabase).includes(dbType as SupportedDatabase)
         ) {
-          console.log(`Valid configuration found for ${dbType}:`, entry.config);
+          //   console.log(`Valid configuration found for ${dbType}:`, entry.config);
           // 將配置保存到 Map 中，使用類型和數據庫名稱作為鍵
           const key = `${dbType}:${entry.config.database}`;
           this.configs.set(key, entry.config);
@@ -63,7 +63,7 @@ export class DatabaseConfigManager {
         }
       });
 
-      console.log("Final loaded configs:", Object.fromEntries(this.configs));
+      //  console.log("Final loaded configs:", Object.fromEntries(this.configs));
       return this;
     } catch (error) {
       console.error("Error loading database config:", error);
@@ -76,7 +76,7 @@ export class DatabaseConfigManager {
     dbName?: string
   ): DatabaseConnections[T] | null {
     const dbTypeLower = dbType.toLowerCase();
-    console.log("Looking for config:", {dbType: dbTypeLower, dbName});
+    // console.log("Looking for config:", {dbType: dbTypeLower, dbName});
 
     // 使用類型和數據庫名稱組合的鍵來查找配置
     const key = `${dbTypeLower}:${dbName}`;
