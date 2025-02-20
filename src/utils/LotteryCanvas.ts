@@ -1,6 +1,7 @@
 import {GetDB} from "QDBService";
 import {QueryResult} from "@lib/QDataBase/types";
 import {createCanvas} from "canvas";
+import {LotteryUtil} from "./LotteryUtil";
 import * as fs from "fs";
 // Define interfaces for better type safety
 interface LotteryData {
@@ -41,32 +42,9 @@ export class LotteryCanvas {
     this.lotteryData = await this.getData(selectNumber);
     this.initialized = true;
   }
-
+  //
   private async getData(selectNumber: string): Promise<LotteryData[]> {
-    try {
-      const result: QueryResult<Record<string, any>[]> = await GetDB(
-        "Lottery"
-      ).query(`SELECT TOP  ${selectNumber} * FROM L539 ORDER BY Period DESC`);
-
-      if (!result.success || !Array.isArray(result.data)) {
-        console.error("Query failed:", result.error);
-        return [];
-      }
-
-      return result.data.map((item) => ({
-        ID: Number(item.ID),
-        Period: Number(item.Period),
-        OpenDate: String(item.OpenDate),
-        NO_1: String(item.NO_1),
-        NO_2: String(item.NO_2),
-        NO_3: String(item.NO_3),
-        NO_4: String(item.NO_4),
-        NO_5: String(item.NO_5),
-      }));
-    } catch (error) {
-      console.error("Failed to fetch lottery data:", error);
-      return [];
-    }
+    return LotteryUtil.getLotteryData(selectNumber);
   }
 
   public getLotteryData(): LotteryData[] {
@@ -75,6 +53,7 @@ export class LotteryCanvas {
     }
     return [...this.lotteryData]; // Return a copy to prevent external modifications
   }
+  //
   public generateTable(data: LotteryData[]): TableData {
     // 生成表頭
     const header = [

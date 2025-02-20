@@ -6,22 +6,12 @@ import {GetDB} from "QDBService";
 import LotteryPredictor from "@utils/LotteryPredictor";
 
 import LotteryPredictor02 from "@utils/LotteryPredictor02";
-import LotteryLSTM from "@utils/LotteryLSTM";
-import {LotteryMath} from "@utils/LotteryMath";
-import LotteryPredictor03 from "@utils/LotteryPredictor03";
-import type {ModelConfig, PredictionResult} from "@utils/LotteryMath";
-// 使用範例
-/*
-async function example() {
-  const predictor = new LotteryPredictor();
-  const result = await predictor.predict(25, 100);
+import LotteryPredictor03 from "@utils/LotteryLSTM";
 
-  console.log("預測號碼：", result.predictedNumbers);
-  console.log("號碼統計：", result.stats);
+export class LotteryPredictorSystem {
+  constructor() {}
 }
 
-example();
-*/
 /*
 async function example() {
   const predictor = new LotteryPredictor02();
@@ -37,35 +27,33 @@ function getAverage(arr: number[]) {
   const sum = arr.reduce((acc, num) => acc + num, 0);
   return sum / arr.length;
 }
+interface PredictResult {
+  avrConfidence: number;
+  numbers: number[];
+}
 //使用 dotenv  載入環境變數
 dotenv.config();
-async function main(
-  dataNumbers: string
-): Promise<PredictionResult | undefined> {
-  //訓練模型參數 :
-  const config: ModelConfig = {
-    sequenceLength: 50,
-    epochs: 30, //訓練次數
-    batchSize: 32,
-    lstmUnits: 50, //神經元
-  };
-  // 參數 ep:30 lst:50 300 , 50 , 150
-  const predictor = new LotteryLSTM(config);
-  const tranRecodSize = 150;
-  const dataRange = 18;
-  //sequenceLength < transRecordSize
+async function main(dataNumbers: string): Promise<PredictResult | undefined> {
+  const predictor = new LotteryPredictor03();
+
   try {
     // 訓練並預測樂透號碼
-    const predictionResult = await predictor.predict(
-      tranRecodSize,
-      dataNumbers,
-      dataRange
-    );
+    const predictionResult = await predictor.predict(150, dataNumbers);
+
+    // 輸出預測結果
+
+    console.log("預測樂透號碼：", predictionResult.predictedNumbers);
+
+    console.log("預測信心度：", predictionResult.confidence);
+    const avrConfidence = getAverage(predictionResult.confidence);
+    //console.log("預測信心度：", avrConfidence);
+
+    console.log("模型準確度：", predictionResult.modelAccuracy);
+    console.log("trainingHistory:", predictionResult.trainingHistory);
+    //const avrConfidence = getAverage(predictionResult.modelAccuracy);
     return {
-      probability: predictionResult.probability,
-      predictedNumbers: predictionResult.predictedNumbers,
-      trainingHistory: predictionResult.trainingHistory,
-      modelAccuracy: predictionResult.modelAccuracy,
+      avrConfidence: avrConfidence,
+      numbers: predictionResult.predictedNumbers,
     };
 
     // 可選：檢視訓練歷史
@@ -83,29 +71,28 @@ type NumberStats = {
 };
 
 function calculateNumberStats(
-  data: PredictionResult[]
+  data: PredictResult[]
 ): Record<number, NumberStats> {
   const numberStats: Record<number, NumberStats> = {};
 
-  data.forEach(({probability, predictedNumbers}) => {
-    predictedNumbers.forEach((num, index) => {
+  data.forEach(({avrConfidence, numbers}) => {
+    numbers.forEach((num) => {
       if (!numberStats[num]) {
         numberStats[num] = {count: 0, weightedCount: 0};
       }
       numberStats[num].count += 1;
-      numberStats[num].weightedCount += probability[index];
+      numberStats[num].weightedCount += avrConfidence;
     });
   });
 
   return numberStats;
 }
-
 function sortByCount(
   stats: Record<number, NumberStats>
 ): [number, NumberStats][] {
   return Object.entries(stats)
     .map(([num, stat]) => [parseInt(num), stat] as [number, NumberStats])
-    .sort((a, b) => b[1].weightedCount - a[1].weightedCount);
+    .sort((a, b) => b[1].count - a[1].count);
 }
 async function Run() {
   // 執行程式5次
@@ -115,12 +102,9 @@ async function Run() {
   for (let i = 0; i < 10; i++) {
     let predictResult = await main("300");
     if (predictResult) {
-      console.log(predictResult.predictedNumbers);
-      console.log(predictResult.probability);
-
-      console.log(predictResult.trainingHistory);
-
+      // if (predictResult.avrConfidence > 6) {
       arrPredictResult.push(predictResult);
+      // }
     }
   }
 
@@ -130,13 +114,3 @@ async function Run() {
 }
 
 Run();
-//main("300");
-/*
-const arrZero = LotteryMath.ZeroOne(39, 0);
-console.log(arrZero);
-const openNumbers = [39];
-const hot = LotteryMath.OneHotEncode(openNumbers, 39);
-console.log(hot);
-const hotDecode = LotteryMath.OneHotDecode(hot, 39);
-console.log(hotDecode);
-*/

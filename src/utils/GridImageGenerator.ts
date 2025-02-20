@@ -20,6 +20,7 @@ interface Dimensions {
   height: number;
 }
 
+//產生格子表格
 export class GridImageGenerator {
   private readonly data: DataArray;
   private readonly outputFilePath: string;
@@ -35,7 +36,7 @@ export class GridImageGenerator {
     fontSize: 12,
     showNumbers: true,
     padding: 10,
-    borderWidth: 2,
+    borderWidth: 1,
   };
 
   constructor(
@@ -51,7 +52,7 @@ export class GridImageGenerator {
 
     this.dimensions = this.calculateDimensions();
   }
-
+  //產生影像
   public async generateImage(): Promise<void> {
     try {
       const canvas = createCanvas(
@@ -113,8 +114,9 @@ export class GridImageGenerator {
     for (let index = 0; index < this.data.length; index++) {
       let row = this.data[index];
       if (index + 1 == this.data.length) {
+        //畫出預期號碼
         row.forEach((cell, j) => {
-          const color = cell === 1 ? "#f54974" : this.options.inactiveColor;
+          const color = cell === 1 ? "#5980e3" : this.options.inactiveColor;
           this.drawCell(ctx, j, index, color, j + 1);
         });
       } else {
@@ -177,7 +179,7 @@ export class GridImageGenerator {
       y + (this.options.cellSize + textHeight) / 2 - 2
     );
   }
-
+  //畫格子線
   private drawGrid(ctx: CanvasRenderingContext2D): void {
     const {width, height} = this.dimensions;
     const {cellSize, gridLineColor, lineWidth, padding} = this.options;
