@@ -129,8 +129,8 @@ async function Run() {
   console.log(sortedStats);
 }
 
-Run();
-//main("300");
+//Run();
+main("300");
 /*
 const arrZero = LotteryMath.ZeroOne(39, 0);
 console.log(arrZero);

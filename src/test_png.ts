@@ -16,7 +16,22 @@ const example = async () => {
     result = LotteryUtil.createArrayMap(lotteryData, result); //產生得獎圖表
     //預測號碼列
     let arr5391D: number[] = Array.from({length: 39}, () => 0);
-    let predictNumbers = ["26", "29", "28", "07", "06", "37", "11"];
+    let predictNumbers = [
+      "05",
+      "08",
+      "11",
+      "18",
+      "13",
+      "03",
+      "07",
+      "12",
+      "32",
+      "20",
+      "23",
+      "14",
+      "33",
+      "38",
+    ];
     //
     let fitNumbers = LotteryUtil.fillPrediction(arr5391D, predictNumbers);
     result.push(fitNumbers);
@@ -111,5 +126,5 @@ const ExImage = async () => {
   });
   imageGenerator.generateImage();
 };
-//example();
-ExImage();
+example();
+//ExImage();
