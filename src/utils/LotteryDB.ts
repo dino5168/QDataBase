@@ -49,9 +49,6 @@ export const GetLotteryData = async (
   try {
     let db = GetDB("Lottery");
     const result = await db.query<LottoDBRecord>(querySQL);
-
-    //result.data?.shift();
-    //result.data?.shift();
     console.log(result.data?.at(0));
     if (!result.data || !Array.isArray(result.data)) {
       console.error("查詢結果異常", result);
@@ -60,6 +57,32 @@ export const GetLotteryData = async (
 
     return result.data
       .reverse() // 加入這行 LSTM 資料須從 舊排到新
+      .map((data) => transformLottoData(data))
+      .filter((item): item is LottoDraw => item !== null);
+  } catch (error) {
+    console.error("獲取數據時出錯", error);
+    return [];
+  }
+};
+
+//LSTM 需要按照時間遞增順序（時間從過去到現在） 來訓練，確保模型學習到過去數據如何影響未來數據。
+//取得樂透資料 並轉換為 LottoDraw
+export const GetLotteryDataNewFirst = async (
+  dataNumbers: string
+): Promise<LottoDraw[]> => {
+  const querySQL = `SELECT Top ${dataNumbers} *  FROM L539 ORDER BY Period desc`;
+  console.log("query Sql:", querySQL);
+
+  try {
+    let db = GetDB("Lottery");
+    const result = await db.query<LottoDBRecord>(querySQL);
+    console.log(result.data?.at(0));
+    if (!result.data || !Array.isArray(result.data)) {
+      console.error("查詢結果異常", result);
+      return [];
+    }
+
+    return result.data
       .map((data) => transformLottoData(data))
       .filter((item): item is LottoDraw => item !== null);
   } catch (error) {

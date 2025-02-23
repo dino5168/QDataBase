@@ -5,7 +5,7 @@ import {GetDB} from "QDBService";
 import type {LottoDraw, LottoDBRecord} from "@utils/LotteryDB";
 import {GetLotteryData} from "@utils/LotteryDB";
 import {LotteryBase} from "./LotteryBase";
-import {LotteryMath} from "./LotteryMath";
+import {LotteryMath} from "./math/LotteryMath";
 
 dotenv.config();
 
@@ -27,6 +27,9 @@ export class LotteryLSTM {
   private readonly MAX_NUMBER = 39;
   private readonly NUMBERS_PER_DRAW = 10;
   private model: tf.LayersModel | null = null;
+
+  private trainData: LottoDraw[] = [];
+
   //lstmUnits LSTM 層的單元數 (神經元數量)
   constructor(
     private readonly config: ModelConfig = {
@@ -45,6 +48,10 @@ export class LotteryLSTM {
     return await GetLotteryData(dataNumbers);
   }
 
+  //設定訓練資料
+  public setTrainData(trainData: LottoDraw[]) {
+    this.trainData = trainData;
+  }
   /**
    * 處理訓練數據
    */
@@ -115,7 +122,9 @@ export class LotteryLSTM {
     dataRange: number = 10
   ): Promise<PredictionResult> {
     // 獲取歷史數據
-    const history = await this.fetchData(dataNumbers); //歷史紀錄
+    //const history = await this.fetchData(dataNumbers); //歷史紀錄
+    const history = this.trainData;
+
     console.log("history.length:", history.length);
     console.log("recentDraws:", recentDraws);
     const recentHistory = history.slice(-recentDraws); //最近歷史紀錄

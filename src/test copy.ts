@@ -1,6 +1,6 @@
 import "tsconfig-paths/register";
 import {LotteryCanvas} from "@utils/LotteryCanvas";
-import {GridImageGenerator} from "@utils/GridImageGenerator";
+import {GridImageGenerator} from "@utils/image/GridImageGenerator";
 import dotenv from "dotenv";
 import {LotteryUtil} from "@utils/LotteryUtil";
 import type {RelationPredictCompare} from "@utils/LotteryUtil";

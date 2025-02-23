@@ -1,10 +1,14 @@
 import * as tf from "@tensorflow/tfjs-node";
+import LotteryLSTM from "../LotteryLSTM";
+import {GetLotteryDataNewFirst, LottoDraw} from "../LotteryDB";
 /**定義預測結果 */
 export interface PredictionResult {
   predictedNumbers: number[];
   probability: number[];
   modelAccuracy: number;
   trainingHistory: tf.History;
+  predictNowData: LottoDraw;
+  predictPreData?: LottoDraw;
 }
 
 /*定義LSTM 模型參數*/
@@ -90,6 +94,19 @@ export class LotteryMath {
     });
     return encoding;
   }
+
+  public static OneHotDecodeSource(encoding: number[]): number[] {
+    const numbers: number[] = [];
+
+    encoding.forEach((value, index) => {
+      if (value === 1) {
+        numbers.push(index + 1); // One-Hot 的索引對應到實際數字 (從 1 開始)
+      }
+    });
+
+    return numbers;
+  }
+
   /**
    * 將 one-hot 編碼轉回號碼
    */
@@ -148,5 +165,97 @@ export class LotteryMath {
       number: num,
       confidence: probability[index],
     }));
+  }
+
+  //執行一次 LSTM 預測
+  public static async PredictedOne(
+    from: number,
+    to: number,
+    dataNumbers: string
+  ): Promise<PredictionResult | undefined> {
+    //訓練模型參數 :
+    const config: ModelConfig = {
+      sequenceLength: 21,
+      epochs: 50, //訓練次數
+      batchSize: 7,
+      lstmUnits: 50, //神經元
+    };
+    // 參數 ep:30 lst:50 300 , 50 , 150
+    const predictor = new LotteryLSTM(config);
+    const tranRecodSize = 150;
+    const dataRange = 18;
+    //sequenceLength < transRecordSize
+    const sourceData: LottoDraw[] = await GetLotteryDataNewFirst(dataNumbers);
+    const predictNowData = sourceData[from];
+    let predictPreData = undefined;
+    if (from > 0) {
+      predictPreData = sourceData[from - 1];
+    }
+
+    const trainData = sourceData.slice(from, to).reverse(); //需要重新排列
+    console.log("trainData.length:", trainData.length);
+    console.log("trainData:", trainData[trainData.length - 1]);
+
+    predictor.setTrainData(trainData);
+    try {
+      // 訓練並預測樂透號碼
+      const predictionResult = await predictor.predict(
+        tranRecodSize,
+        dataNumbers,
+        dataRange
+      );
+
+      return {
+        probability: predictionResult.probability,
+        predictedNumbers: predictionResult.predictedNumbers,
+        trainingHistory: predictionResult.trainingHistory,
+        modelAccuracy: predictionResult.modelAccuracy,
+        predictNowData: predictNowData,
+        predictPreData: predictPreData,
+      };
+
+      // 可選：檢視訓練歷史
+      //console.log("訓練歷史：", predictionResult.trainingHistory);
+    } catch (error) {
+      console.error("預測過程中發生錯誤：", error);
+    } finally {
+      // 銷毀模型以釋放記憶體
+      predictor.dispose();
+    }
+  }
+
+  public static Sort_Count(data: Record<string, number>): [string, number][] {
+    return Object.entries(data).sort((a, b) => b[1] - a[1]); // 根據值進行升序排序
+  }
+
+  //將數字轉成文字 1-> 01
+  public static Number_To_String(sort_data: [string, number][]): string[] {
+    const str_arr_num: string[] = [];
+
+    Object.entries(sort_data).forEach(([_, value]) => {
+      const num = parseInt(value.toString(), 10); // 轉換數字為字串再解析
+      const str_num = num < 10 ? `0${num}` : `${num}`;
+      str_arr_num.push(str_num);
+
+      console.log(str_num);
+    });
+    return str_arr_num; // 返回結果
+  }
+
+  //產生補數陣列
+  public static getComplementNumbers(
+    numbers: number[],
+    maxNumber: number = 39
+  ): number[] {
+    const numberSet = new Set(numbers); // 使用 Set 方便查找
+    const complement: number[] = [];
+
+    for (let i = 1; i <= maxNumber; i++) {
+      if (!numberSet.has(i)) {
+        complement.push(i);
+      }
+    }
+
+    return complement;
   }
 }

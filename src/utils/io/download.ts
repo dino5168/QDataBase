@@ -9,7 +9,7 @@ import {DomHandler, Element} from "domhandler";
 import {selectOne, selectAll} from "css-select";
 
 import * as DomUtils from "domutils";
-import {GetDB} from "./QDBService";
+import {GetDB} from "../../QDBService";
 
 //使用 dotenv  載入環境變數
 dotenv.config();

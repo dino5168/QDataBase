@@ -2,7 +2,7 @@ import "tsconfig-paths/register";
 import dotenv from "dotenv";
 import * as tf from "@tensorflow/tfjs-node";
 import {GetDB} from "QDBService";
-import {LotteryMath} from "./LotteryMath";
+import {LotteryMath} from "./math/LotteryMath";
 
 dotenv.config();
 

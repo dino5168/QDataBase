@@ -1,6 +1,6 @@
 import {QueryResult} from "@lib/QDataBase/types";
 import {GetDB} from "QDBService";
-import {LotteryMath} from "@utils/LotteryMath";
+import {LotteryMath} from "@utils/math/LotteryMath";
 import LotteryLSTM from "@utils/LotteryLSTM";
 
 interface PredictResult {
@@ -50,6 +50,7 @@ export class LotteryUtil {
     );
     return result;
   };
+
   public static ZeroOneArray = (
     size: number,
     fillNumber: number = 0
@@ -280,6 +281,7 @@ export class LotteryUtil {
     return emptyCompareResults;
   };
 
+  //計算數字之間的關聯表
   public static computeRelationTable = async (
     lotteryData: LotteryData[],
     predicNumber: number

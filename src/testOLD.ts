@@ -139,7 +139,7 @@ async function Run() {
 //Run();
 //main("300");
 import {LotteryCanvas} from "@utils/LotteryCanvas";
-import {GridImageGenerator} from "@utils/GridImageGenerator";
+import {GridImageGenerator} from "@utils/image/GridImageGenerator";
 
 function fillPrediction(arr: number[], numbers: string[]): number[] {
   numbers.forEach((num) => {
